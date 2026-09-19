@@ -1,0 +1,44 @@
+# ============================================================
+# Experiment 6: Docker Compose Configuration
+# Deploys Flask app + Redis database together
+# ============================================================
+
+version: "3.9"
+
+services:
+
+  # ---- Flask Web Application ----
+  web_app:
+    build: .
+    container_name: flask_app
+    ports:
+      - "5000:5000"           # host:container
+    environment:
+      - REDIS_HOST=redis_db
+      - REDIS_PORT=6379
+    depends_on:
+      - redis_db              # start Redis before the app
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  # ---- Redis Database ----
+  redis_db:
+    image: redis:7-alpine     # use official Redis image
+    container_name: redis_db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data      # persist Redis data
+    networks:
+      - app_network
+    restart: unless-stopped
+
+# ---- Named Volume for Redis persistence ----
+volumes:
+  redis_data:
+
+# ---- Custom Network ----
+networks:
+  app_network:
+    driver: bridge

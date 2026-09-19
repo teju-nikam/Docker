@@ -1,0 +1,5 @@
+# Dockerfile for Data Reader
+FROM python:3.11-slim
+WORKDIR /app
+COPY data_reader.py .
+CMD ["python", "data_reader.py"]
